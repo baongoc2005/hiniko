@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tài khoản — Mường Thanh</title>
+  <meta name="description" content="Quản lý tài khoản, lịch sử đặt phòng và ưu đãi Mường Thanh của bạn."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="profile.css"/>
+  <script src="i18n.js"></script>
+</head>
+<body>
+
+  <!-- Page loading -->
+  <div class="page-loading" id="pageLoading">
+    <div class="page-loading-logo">Mường Thanh</div>
+  </div>
+
+  <!-- TOP NAV -->
+  <nav class="profile-nav" id="profileNav">
+    <a href="index.html" class="nav-logo">Mường Thanh</a>
+    <div class="nav-center">
+      <a href="index.html" class="nav-link" data-i18n="profile.home">Trang chủ</a>
+      <a href="search.html" class="nav-link" data-i18n="profile.book_link">Đặt phòng</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-username" id="navUsername"></span>
+      <button class="btn-logout" id="btnLogout" onclick="logout()" data-i18n="profile.logout">Đăng xuất</button>
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="vi" onclick="setLang('vi')">VI</button>
+        <span class="lang-sep">|</span>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+    <!-- Mobile burger -->
+    <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile nav menu -->
+  <div class="mobile-nav-menu" id="mobileNavMenu">
+    <a href="index.html" class="mobile-nav-link">Trang chủ</a>
+    <a href="search.html" class="mobile-nav-link">Đặt phòng</a>
+    <button class="mobile-nav-link mobile-logout" onclick="logout()">Đăng xuất</button>
+  </div>
+
+  <!-- PROFILE LAYOUT -->
+  <div class="profile-layout" id="profileLayout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="avatar-circle" id="sidebarAvatar">MT</div>
+        <div class="sidebar-name" id="sidebarName">Đang tải...</div>
+        <div class="sidebar-email" id="sidebarEmail"></div>
+        <div class="vip-badge" id="vipBadge" style="display:none">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          VIP Member
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav">
+        <button class="sidebar-nav-item active" data-section="info" onclick="showSection('info')">
+          <span class="nav-icon">👤</span>
+          <span>Thông tin cá nhân</span>
+        </button>
+        <button class="sidebar-nav-item" data-section="bookings" onclick="showSection('bookings')">
+          <span class="nav-icon">📋</span>
+          <span>Lịch sử đặt phòng</span>
+          <span class="nav-badge" id="bookingCount" style="display:none"></span>
+        </button>
+        <button class="sidebar-nav-item" data-section="promos" onclick="showSection('promos')">
+          <span class="nav-icon">🎁</span>
+          <span>Khuyến mãi</span>
+          <span class="nav-badge promo-badge" id="promoCount" style="display:none"></span>
+        </button>
+        <button class="sidebar-nav-item" data-section="password" onclick="showSection('password')">
+          <span class="nav-icon">🔒</span>
+          <span>Đổi mật khẩu</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="profile-main">
+
+      <!-- Mobile tabs -->
+      <div class="mobile-tabs" id="mobileTabs">
+        <button class="mobile-tab active" data-section="info" onclick="showSection('info')">👤 Thông tin</button>
+        <button class="mobile-tab" data-section="bookings" onclick="showSection('bookings')">📋 Đặt phòng</button>
+        <button class="mobile-tab" data-section="promos" onclick="showSection('promos')">🎁 Ưu đãi</button>
+        <button class="mobile-tab" data-section="password" onclick="showSection('password')">🔒 Mật khẩu</button>
+      </div>
+
+      <!-- SECTION 1: THÔNG TIN CÁ NHÂN -->
+      <section class="profile-section active" id="section-info">
+        <div class="section-header">
+          <h1 class="section-title">Thông tin cá nhân</h1>
+          <p class="section-sub">Cập nhật thông tin hồ sơ của bạn</p>
+        </div>
+        <div class="profile-card">
+          <form id="profileForm" onsubmit="saveProfile(event)">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="fLastName">Họ</label>
+                <input type="text" id="fLastName" placeholder="Nguyễn" autocomplete="family-name"/>
+              </div>
+              <div class="form-field">
+                <label for="fFirstName">Tên</label>
+                <input type="text" id="fFirstName" placeholder="Văn A" autocomplete="given-name"/>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="fEmail">Email</label>
+              <input type="email" id="fEmail" disabled class="input-disabled"/>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="fPhone">Điện thoại</label>
+                <input type="tel" id="fPhone" placeholder="0912 345 678" autocomplete="tel"/>
+              </div>
+              <div class="form-field">
+                <label for="fNationality">Quốc tịch</label>
+                <div class="select-wrap">
+                  <select id="fNationality">
+                    <option value="VN">Việt Nam</option>
+                    <option value="EN">English</option>
+                    <option value="KR">한국어</option>
+                    <option value="CN">中文</option>
+                    <option value="JP">日本語</option>
+                    <option value="Other">Khác</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-gold" id="btnSaveProfile">Lưu thay đổi</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SECTION 2: LỊCH SỬ ĐẶT PHÒNG -->
+      <section class="profile-section" id="section-bookings">
+        <div class="section-header">
+          <h1 class="section-title">Lịch sử đặt phòng</h1>
+          <p class="section-sub">Tất cả các đặt phòng của bạn</p>
+        </div>
+        <div id="bookingsList"></div>
+      </section>
+
+      <!-- SECTION 3: KHUYẾN MÃI -->
+      <section class="profile-section" id="section-promos">
+        <div class="section-header">
+          <h1 class="section-title">Khuyến mãi</h1>
+          <p class="section-sub">Mã ưu đãi đang hoạt động dành cho bạn</p>
+        </div>
+        <div class="promos-grid" id="promosList"></div>
+      </section>
+
+      <!-- SECTION 4: ĐỔI MẬT KHẨU -->
+      <section class="profile-section" id="section-password">
+        <div class="section-header">
+          <h1 class="section-title">Đổi mật khẩu</h1>
+          <p class="section-sub">Bảo mật tài khoản của bạn</p>
+        </div>
+        <div class="profile-card profile-card--narrow">
+          <form id="passwordForm" onsubmit="changePassword(event)">
+            <div class="form-field">
+              <label for="pwdOld">Mật khẩu hiện tại</label>
+              <div class="input-wrap has-eye">
+                <input type="password" id="pwdOld" placeholder="••••••••" autocomplete="current-password"/>
+                <button type="button" class="eye-btn" onclick="toggleEye('pwdOld', this)" aria-label="Hiện/ẩn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="pwdNew">Mật khẩu mới</label>
+              <div class="input-wrap has-eye">
+                <input type="password" id="pwdNew" placeholder="Ít nhất 6 ký tự" autocomplete="new-password"/>
+                <button type="button" class="eye-btn" onclick="toggleEye('pwdNew', this)" aria-label="Hiện/ẩn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="pwdConfirm">Xác nhận mật khẩu mới</label>
+              <div class="input-wrap has-eye">
+                <input type="password" id="pwdConfirm" placeholder="Nhập lại mật khẩu mới" autocomplete="new-password"/>
+                <button type="button" class="eye-btn" onclick="toggleEye('pwdConfirm', this)" aria-label="Hiện/ẩn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-gold" id="btnChangePassword">Đổi Mật Khẩu</button>
+            </div>
+            <div class="inline-msg" id="pwdMsg"></div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="profile.js"></script>
+</body>
+</html>
