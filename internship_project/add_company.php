@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ten = $_POST['ten'];
     $mieu_ta = $_POST['su_mieu_ta'];
     $han_ngach = $_POST['han_ngach'];
-
     // BUSINESS RULE: Kiểm tra trùng tên công ty (Backend Validation) [cite: 30]
     $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM companies WHERE ten = ?");
     $stmt_check->execute([$ten]);
