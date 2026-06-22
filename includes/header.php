@@ -1,6 +1,6 @@
 <?php
 if (!isset($pageTitle)) {
-    $pageTitle = "Internship Manager";
+    $pageTitle = "Quản lý Thực tập";
 }
 
 if (!isset($active)) {
@@ -21,8 +21,7 @@ $navAccess = [
     'assignments'   => ['admin', 'lecturer'],
     'journals'      => ['admin', 'student', 'lecturer'],
     'evaluations'   => ['admin', 'lecturer', 'company'],
-    'final_grades'  => ['admin', 'student', 'lecturer', 'company'],
-    'compliance'    => ['admin', 'lecturer'],
+    'final_grades'  => ['admin', 'student', 'lecturer'],
 ];
 
 $canSee = static function (string $key) use ($navAccess, $role): bool {
@@ -42,7 +41,7 @@ if (in_array($active, ['users', 'students', 'lecturers', 'companies', 'positions
     $memberGroup = 1;
 } elseif (in_array($active, ['registrations', 'assignments', 'journals'], true)) {
     $memberGroup = 2;
-} elseif (in_array($active, ['evaluations', 'final_grades', 'compliance'], true)) {
+} elseif (in_array($active, ['evaluations', 'final_grades'], true)) {
     $memberGroup = 3;
 } else {
     $memberGroup = 0;
@@ -148,7 +147,7 @@ if (in_array($active, ['users', 'students', 'lecturers', 'companies', 'positions
             </details>
             <?php endif; ?>
 
-            <?php if ($groupVisible(['evaluations', 'final_grades', 'compliance'])): ?>
+            <?php if ($groupVisible(['evaluations', 'final_grades'])): ?>
             <details class="member-group" <?= $memberGroup === 3 ? 'open' : '' ?>>
                 <summary>Đánh giá & Báo cáo</summary>
 
@@ -162,12 +161,6 @@ if (in_array($active, ['users', 'students', 'lecturers', 'companies', 'positions
                     <?php if ($canSee('final_grades')): ?>
                     <a class="<?= $active === 'final_grades' ? 'active' : '' ?>" href="final_grades.php">
                         Điểm tổng kết
-                    </a>
-                    <?php endif; ?>
-
-                    <?php if ($canSee('compliance')): ?>
-                    <a class="<?= $active === 'compliance' ? 'active' : '' ?>" href="compliance.php">
-                        Tuân thủ
                     </a>
                     <?php endif; ?>
                 </div>

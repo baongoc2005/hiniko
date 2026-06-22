@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap&subset=vietnamese,latin');
+
 :root {
     --bg: #f4f7fb;
     --card: #ffffff;
@@ -20,8 +22,11 @@
 
 body {
     margin: 0;
-    font-family: Inter, Segoe UI, Arial, sans-serif;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
     color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
     background:
         radial-gradient(circle at top left, rgba(37,99,235,0.12), transparent 32%),
         radial-gradient(circle at bottom right, rgba(124,58,237,0.10), transparent 28%),
@@ -193,7 +198,9 @@ nav a.active,
 
 .topbar h2 {
     margin: 0;
-    font-size: 30px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
 }
 
 .user-chip {
@@ -243,7 +250,9 @@ nav a.active,
 
 .card h3 {
     margin: 0 0 16px;
-    font-size: 19px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
 }
 
 .stat {
@@ -285,7 +294,7 @@ nav a.active,
 }
 
 label {
-    font-weight: 800;
+    font-weight: 600;
     font-size: 13px;
     color: #334155;
     display: block;
@@ -329,7 +338,8 @@ button,
     background: var(--primary);
     color: #fff;
     text-decoration: none;
-    font-weight: 800;
+    font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
     transition: 0.2s;
 }
@@ -338,6 +348,7 @@ button:hover,
 .btn:hover {
     background: var(--primary-dark);
     transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.25);
 }
 
 .btn.secondary {
@@ -395,16 +406,25 @@ table {
 
 th {
     text-align: left;
-    color: #475569;
+    color: #64748b;
     background: #f8fafc;
     border-bottom: 1px solid var(--border);
-    padding: 13px;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
 }
 
 td {
-    border-bottom: 1px solid var(--border);
-    padding: 13px;
-    vertical-align: top;
+    border-bottom: 1px solid #eef2f7;
+    padding: 13px 14px;
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: none;
 }
 
 tr:hover td {
@@ -414,10 +434,11 @@ tr:hover td {
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 5px 9px;
+    padding: 4px 10px;
     border-radius: 999px;
-    font-size: 12px;
-    font-weight: 900;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
 .badge.pending {

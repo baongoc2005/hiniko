@@ -56,3 +56,19 @@ function hasRole(string ...$roles): bool
 {
     return in_array(currentRole(), $roles, true);
 }
+
+// Thông tin sinh viên (student_code, major) của user đang đăng nhập
+function currentStudentInfo(PDO $pdo): array
+{
+    $stmt = $pdo->prepare("SELECT student_code, major FROM students WHERE user_id = ?");
+    $stmt->execute([currentUserId()]);
+    return $stmt->fetch() ?: ['student_code' => null, 'major' => null];
+}
+
+// Thông tin giảng viên (instructor_code, department) của user đang đăng nhập
+function currentInstructorInfo(PDO $pdo): array
+{
+    $stmt = $pdo->prepare("SELECT instructor_code, department FROM instructors WHERE user_id = ?");
+    $stmt->execute([currentUserId()]);
+    return $stmt->fetch() ?: ['instructor_code' => null, 'department' => null];
+}
