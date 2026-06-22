@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hướng dẫn thuyết trình — Hệ thống Quản lý Thực tập</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap&subset=vietnamese,latin');
+
+    :root {
+        --ink: #0f172a;
+        --text: #1e293b;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #eef2f7;
+        --blue: #2563eb;
+        --green: #15803d;
+        --amber: #b45309;
+        --purple: #6d28d9;
+        --red: #b91c1c;
+        --card: #ffffff;
+        --soft: #f8fafc;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+    }
+    code {
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 0.88em;
+        font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    }
+
+    /* HERO */
+    .hero {
+        position: relative;
+        min-height: 560px;
+        display: flex;
+        align-items: center;
+        padding: 80px 6vw 140px;
+        color: #fff;
+        background:
+            linear-gradient(180deg, rgba(15,23,42,0.78), rgba(15,23,42,0.86)),
+            linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #0f172a 100%);
+        overflow: hidden;
+    }
+    .hero-inner { max-width: 1180px; margin: 0 auto; width: 100%; }
+    .hero .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 13px;
+        font-weight: 700;
+        color: #cbd5e1;
+        margin: 0 0 18px;
+    }
+    .hero h1 {
+        font-size: clamp(40px, 7vw, 84px);
+        line-height: 1.02;
+        font-weight: 900;
+        margin: 0 0 22px;
+        letter-spacing: -0.02em;
+    }
+    .hero p {
+        font-size: clamp(16px, 1.6vw, 20px);
+        color: #dbe3f0;
+        max-width: 760px;
+        margin: 0 0 30px;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 12px; }
+    .chip {
+        padding: 10px 18px;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        background: rgba(255,255,255,0.07);
+        backdrop-filter: blur(6px);
+    }
+
+    /* LAYOUT */
+    .wrap { max-width: 1180px; margin: -90px auto 0; padding: 0 5vw 80px; position: relative; z-index: 2; }
+    .panel {
+        background: var(--card);
+        border-radius: 20px;
+        box-shadow: 0 18px 50px rgba(15,23,42,0.10);
+        padding: 40px clamp(24px, 4vw, 56px);
+        margin-bottom: 30px;
+    }
+    .panel h2 {
+        font-size: clamp(24px, 3vw, 34px);
+        font-weight: 800;
+        color: var(--ink);
+        margin: 0 0 8px;
+        letter-spacing: -0.01em;
+    }
+    .lead { color: var(--muted); font-size: 16px; margin: 0 0 26px; max-width: 880px; }
+
+    /* INFO CARDS */
+    .info-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px 24px;
+        margin-bottom: 16px;
+        background: var(--soft);
+    }
+    .info-card h3 { margin: 12px 0 8px; font-size: 18px; color: var(--ink); font-weight: 700; }
+    .info-card p { margin: 0; color: var(--muted); }
+    .tag {
+        display: inline-block;
+        color: #fff;
+        font-size: 12.5px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 999px;
+    }
+    .t-blue { background: var(--blue); }
+    .t-green { background: var(--green); }
+    .t-amber { background: var(--amber); }
+    .t-purple { background: var(--purple); }
+    .t-red { background: var(--red); }
+
+    /* GRID */
+    .grid { display: grid; gap: 18px; }
+    .g2 { grid-template-columns: repeat(2, 1fr); }
+    .g3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 860px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+    /* TIMELINE */
+    .tl-item {
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 22px 24px;
+        margin-bottom: 16px;
+        border-top: 4px solid var(--blue);
+    }
+    .tl-item .time { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 0.03em; }
+    .tl-item h3 { margin: 6px 0 8px; font-size: 19px; color: var(--ink); }
+    .tl-item p { margin: 0; color: var(--muted); }
+
+    /* LIST */
+    ul.clean { margin: 0; padding-left: 20px; }
+    ul.clean li { margin-bottom: 10px; color: var(--text); }
+
+    /* SCRIPT QUOTE */
+    .quote {
+        border-left: 4px solid var(--blue);
+        background: #f1f5ff;
+        padding: 18px 22px;
+        border-radius: 0 12px 12px 0;
+        margin-top: 22px;
+    }
+    .quote b { color: var(--ink); }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14.5px; }
+    th { background: #eef2ff; color: var(--ink); text-align: left; padding: 14px; font-weight: 700; }
+    td { padding: 14px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--text); }
+
+    /* ERD */
+    .erd { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 24px; }
+    @media (max-width: 860px) { .erd { grid-template-columns: 1fr; } }
+    .area {
+        border: 2px dashed var(--blue);
+        border-radius: 16px;
+        padding: 18px;
+    }
+    .area.a2 { border-color: var(--amber); }
+    .area.a3 { border-color: var(--green); }
+    .area > h4 { margin: 0 0 14px; font-size: 16px; color: var(--ink); }
+    .ent {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin-bottom: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(15,23,42,0.05);
+    }
+    .ent .head { background: #eaf1ff; padding: 10px 14px; font-weight: 700; color: var(--ink); font-size: 14.5px; }
+    .area.a2 .ent .head { background: #fdf3e3; }
+    .area.a3 .ent .head { background: #e7f6ec; }
+    .ent .body { padding: 10px 14px; font-size: 12.5px; color: var(--muted); }
+    .ent .body div { margin-bottom: 4px; }
+    .pk { color: var(--blue); font-weight: 700; }
+
+    /* RUBRIC */
+    .rubric-row { display: grid; grid-template-columns: 160px 1fr 130px; gap: 18px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .rubric-row:last-child { border-bottom: none; }
+    .rubric-row .lvl { font-weight: 800; color: var(--ink); }
+    .rubric-row .pill { color: #fff; text-align: center; padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+    @media (max-width: 720px) { .rubric-row { grid-template-columns: 1fr; gap: 8px; } .rubric-row .pill { justify-self: start; } }
+
+    /* STEPS */
+    .step { display: flex; gap: 16px; margin-bottom: 22px; }
+    .step .n {
+        flex: 0 0 34px; height: 34px; border-radius: 50%;
+        background: var(--ink); color: #fff; display: grid; place-items: center;
+        font-weight: 700; font-size: 15px;
+    }
+    .step h3 { margin: 4px 0 6px; font-size: 17px; color: var(--ink); }
+    .step p { margin: 0; color: var(--muted); }
+
+    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 30px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">INS3064 — Thiết kế Đa phương tiện & Phát triển Web · Bài thi cuối kỳ</p>
+        <h1>Hệ thống Quản lý Thực tập &amp; Đánh giá Doanh nghiệp</h1>
+        <p>Quản lý toàn bộ vòng đời một kỳ thực tập: đăng ký/ứng tuyển vị trí, kiểm tra điều kiện ở backend, phân công giảng viên hướng dẫn, nộp nhật ký hàng tuần, đánh giá kép và tính điểm tổng kết.</p>
+        <div class="chips">
+            <span class="chip">Nhóm 3 thành viên</span>
+            <span class="chip">14 bảng cơ sở dữ liệu</span>
+            <span class="chip">4 vai trò người dùng</span>
+            <span class="chip">PHP + PDO + MySQL</span>
+        </div>
+    </div>
+</header>
+
+<div class="wrap">
+
+    <!-- WHY STRONG -->
+    <section class="panel">
+        <h2>Vì sao đề tài này đủ mạnh cho bài thi cuối kỳ</h2>
+        <p class="lead">Hệ thống không chỉ là CRUD đơn giản. Backend phải ra quyết định cho từng đăng ký, xử lý luồng phê duyệt nhiều vai trò, và biến dữ liệu nhật ký thành báo cáo theo dõi tiến độ.</p>
+
+        <div class="info-card">
+            <span class="tag t-blue">Bài toán lớn</span>
+            <h3>Nhiều vai trò, nhiều nghiệp vụ liên kết</h3>
+            <p>Bốn vai trò (Admin, Sinh viên, Giảng viên, Doanh nghiệp) cùng tham gia một quy trình duy nhất: mở vị trí → ứng tuyển kèm CV → duyệt → phân công GVHD → nộp nhật ký → đánh giá → tính điểm.</p>
+        </div>
+        <div class="info-card">
+            <span class="tag t-green">Logic backend thật</span>
+            <h3>Kiểm tra điều kiện và luồng phê duyệt</h3>
+            <p>Backend kiểm tra đúng ngành và quota khi đăng ký, khóa quyền theo vai trò, tự xác định nhật ký nộp trễ theo lịch từng tuần, và hợp nhất điểm đánh giá kép theo trọng số cấu hình.</p>
+        </div>
+        <div class="info-card">
+            <span class="tag t-amber">Hỗ trợ ra quyết định</span>
+            <h3>Theo dõi tiến độ &amp; cảnh báo</h3>
+            <p>Hệ thống tự phát hiện sinh viên thiếu nhật ký, cảnh báo ngay khi đăng nhập, và tổng hợp tiến độ 6 tuần kèm file báo cáo để giảng viên nhận xét từng tuần.</p>
+        </div>
+    </section>
+
+    <!-- PRESENTATION TIMELINE -->
+    <section class="panel">
+        <h2>Cấu trúc thuyết trình 5 phút gợi ý</h2>
+        <p class="lead">Bám theo năm phần: bài toán, cơ sở dữ liệu &amp; ERD, thống kê/theo dõi, kiến trúc, và demo. Tập trung vào tiêu chí chấm thay vì mô tả từng màn hình.</p>
+
+        <div class="tl-item" style="border-color:var(--blue)">
+            <span class="time">0:00 – 0:45</span>
+            <h3>1. Bài toán</h3>
+            <p>Một trường có nhiều sinh viên đi thực tập tại nhiều doanh nghiệp. Nếu quản lý bằng Excel/email, dễ trùng vị trí, khó theo dõi tiến độ nộp báo cáo và khó tổng hợp điểm.</p>
+        </div>
+        <div class="tl-item" style="border-color:var(--green)">
+            <span class="time">0:45 – 1:50</span>
+            <h3>2. Cơ sở dữ liệu / ERD</h3>
+            <p>Giới thiệu 14 bảng, gom thành ba nhóm: tài khoản &amp; dữ liệu nền, quy trình thực tập, và đánh giá &amp; báo cáo.</p>
+        </div>
+        <div class="tl-item" style="border-color:var(--amber)">
+            <span class="time">1:50 – 2:45</span>
+            <h3>3. Theo dõi &amp; thống kê</h3>
+            <p>Dùng dữ liệu mẫu để giải thích tiến độ nhật ký, tự động xác định trễ hạn, danh sách nguy cơ, và bảng điểm tổng kết.</p>
+        </div>
+        <div class="tl-item" style="border-color:var(--purple)">
+            <span class="time">2:45 – 3:45</span>
+            <h3>4. Phân quyền &amp; nghiệp vụ</h3>
+            <p>Giải thích mỗi vai trò thấy gì, làm gì; backend chặn quyền và kiểm tra điều kiện ra sao.</p>
+        </div>
+        <div class="tl-item" style="border-color:var(--red)">
+            <span class="time">3:45 – 5:00</span>
+            <h3>5. Demo</h3>
+            <p>Trình diễn: một đăng ký hợp lệ, một đăng ký bị chặn sai ngành/đủ quota, ứng tuyển kèm CV được doanh nghiệp duyệt, và bảng điểm tổng kết.</p>
+        </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="panel">
+        <h2>1. Hệ thống giải quyết vấn đề gì?</h2>
+        <p class="lead">Bắt đầu từ bài toán nghiệp vụ thực tế trước khi nói công nghệ. Mục tiêu là cho thấy nhóm hiểu quy trình, không chỉ hiểu giao diện.</p>
+        <div class="grid g2">
+            <div class="info-card">
+                <span class="tag t-red">Vấn đề hiện tại</span>
+                <ul class="clean" style="margin-top:14px;">
+                    <li>Sinh viên không biết vị trí nào ở doanh nghiệp nào còn nhận, có hợp ngành không.</li>
+                    <li>Cùng một vị trí có thể bị nhận vượt quá chỉ tiêu nếu xét tay.</li>
+                    <li>Việc nộp nhật ký hàng tuần khó theo dõi: ai nộp, ai trễ, ai thiếu.</li>
+                    <li>Điểm doanh nghiệp và điểm giảng viên rời rạc, khó tổng hợp công bằng.</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <span class="tag t-green">Giải pháp của hệ thống</span>
+                <ul class="clean" style="margin-top:14px;">
+                    <li>Cổng tập trung: doanh nghiệp mở vị trí, sinh viên ứng tuyển kèm CV.</li>
+                    <li>Backend kiểm tra <b>đúng ngành</b> và <b>còn quota</b> trước khi lưu đăng ký.</li>
+                    <li>Nhật ký 6 tuần tự gắn trạng thái Đúng hạn / Trễ theo lịch đợt.</li>
+                    <li>Đánh giá kép (DN 60% + GV 40%) tự hợp nhất thành điểm tổng kết.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="quote">
+            <b>Lời thoại gợi ý:</b> Dự án giải quyết bài toán quản lý thực tập của cả trường. Điểm quan trọng không phải lưu bản ghi đăng ký, mà là backend phải quyết định một đăng ký có hợp lệ không — đúng ngành chưa, còn chỗ không, ai được duyệt — rồi dùng chính dữ liệu đó để theo dõi tiến độ và tính điểm.
+        </div>
+    </section>
+
+    <!-- DATABASE + ERD -->
+    <section class="panel">
+        <h2>2. Thiết kế cơ sở dữ liệu: 14 bảng</h2>
+        <p class="lead">Với nhóm 3 thành viên, mỗi người phụ trách một nhóm bảng và các chức năng liên quan. Các bảng tạo thành một hệ thống nghiệp vụ liên kết, không phải các module CRUD rời rạc.</p>
+        <table>
+            <thead>
+                <tr><th>Nhóm bảng</th><th>Các bảng</th><th>Vai trò trong hệ thống</th><th>Phụ trách</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Tài khoản &amp; dữ liệu nền</b></td>
+                    <td><code>users</code>, <code>students</code>, <code>instructors</code>, <code>companies</code>, <code>internship_positions</code>, <code>internship_periods</code></td>
+                    <td>Tài khoản đăng nhập (users), hồ sơ sinh viên (students) và giảng viên (instructors), doanh nghiệp đối tác, vị trí thực tập (kèm ngành, quota, JD) và các đợt thực tập.</td>
+                    <td>Thành viên 1</td>
+                </tr>
+                <tr>
+                    <td><b>Quy trình thực tập</b></td>
+                    <td><code>internship_registrations</code>, <code>internship_assignments</code>, <code>weekly_journals</code>, <code>files</code></td>
+                    <td>Đăng ký/ứng tuyển vị trí kèm CV, phân công GVHD, nhật ký hàng tuần và file báo cáo theo tuần.</td>
+                    <td>Thành viên 2</td>
+                </tr>
+                <tr>
+                    <td><b>Đánh giá &amp; báo cáo</b></td>
+                    <td><code>company_evaluations</code>, <code>lecturer_evaluations</code>, <code>final_grades</code></td>
+                    <td>Điểm doanh nghiệp, điểm giảng viên và điểm tổng kết theo trọng số cấu hình.</td>
+                    <td>Thành viên 3</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="erd">
+            <div class="area a1">
+                <h4>Nhóm 1: Tài khoản &amp; dữ liệu nền</h4>
+                <div class="ent"><div class="head">users (tài khoản đăng nhập)</div><div class="body">
+                    <div><span class="pk">PK</span> user_id, username, name, email</div>
+                    <div>password, role: admin/student/lecturer/company</div>
+                    <div>company_id</div>
+                </div></div>
+                <div class="ent"><div class="head">students</div><div class="body">
+                    <div><span class="pk">PK</span> student_id, <span class="pk">FK</span> user_id</div>
+                    <div>student_code, major</div>
+                </div></div>
+                <div class="ent"><div class="head">instructors</div><div class="body">
+                    <div><span class="pk">PK</span> instructor_id, <span class="pk">FK</span> user_id</div>
+                    <div>instructor_code, department</div>
+                </div></div>
+                <div class="ent"><div class="head">companies</div><div class="body">
+                    <div><span class="pk">PK</span> company_id, name</div>
+                    <div>email, phone, address, quota</div>
+                </div></div>
+                <div class="ent"><div class="head">internship_positions</div><div class="body">
+                    <div><span class="pk">PK</span> ip_id, <span class="pk">FK</span> company_id</div>
+                    <div>title, description, jd_file</div>
+                    <div>major, quota</div>
+                </div></div>
+                <div class="ent"><div class="head">internship_periods</div><div class="body">
+                    <div><span class="pk">PK</span> period_id, name</div>
+                    <div>start_date, end_date</div>
+                </div></div>
+            </div>
+
+            <div class="area a2">
+                <h4>Nhóm 2: Quy trình thực tập</h4>
+                <div class="ent"><div class="head">internship_registrations</div><div class="body">
+                    <div><span class="pk">PK</span> ir_id, <span class="pk">FK</span> student_id</div>
+                    <div>position_id, period_id, cv_file</div>
+                    <div>proposed_company, proposed_position</div>
+                    <div>status: Pending/Approved/Rejected</div>
+                </div></div>
+                <div class="ent"><div class="head">internship_assignments</div><div class="body">
+                    <div><span class="pk">PK</span> ia_id, <span class="pk">FK</span> registration_id</div>
+                    <div>lecturer_id, assigned_at</div>
+                </div></div>
+                <div class="ent"><div class="head">weekly_journals</div><div class="body">
+                    <div><span class="pk">PK</span> wj_id, <span class="pk">FK</span> registration_id</div>
+                    <div>week_number, content</div>
+                    <div>status, lecturer_comment</div>
+                </div></div>
+                <div class="ent"><div class="head">files</div><div class="body">
+                    <div><span class="pk">PK</span> file_id, <span class="pk">FK</span> registration_id</div>
+                    <div>week_number, file_path, file_type</div>
+                </div></div>
+            </div>
+
+            <div class="area a3">
+                <h4>Nhóm 3: Đánh giá &amp; báo cáo</h4>
+                <div class="ent"><div class="head">company_evaluations</div><div class="body">
+                    <div><span class="pk">PK</span> ce_id, <span class="pk">FK</span> registration_id</div>
+                    <div>score, comment</div>
+                </div></div>
+                <div class="ent"><div class="head">lecturer_evaluations</div><div class="body">
+                    <div><span class="pk">PK</span> le_id, <span class="pk">FK</span> registration_id</div>
+                    <div>score, comment</div>
+                </div></div>
+                <div class="ent"><div class="head">final_grades</div><div class="body">
+                    <div><span class="pk">PK</span> fg_id, <span class="pk">FK</span> registration_id</div>
+                    <div>company_score, lecturer_score</div>
+                    <div>final_score = DN×0.6 + GV×0.4</div>
+                </div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES / TRACKING -->
+    <section class="panel">
+        <h2>3. Theo dõi &amp; thống kê giải quyết gì?</h2>
+        <p class="lead">Phần này khiến dự án mạnh hơn một ứng dụng CRUD thuần. Điều quan trọng là giải thích bảng nào sinh ra số liệu nào và số liệu đó hỗ trợ quyết định gì.</p>
+        <div class="grid g3">
+            <div class="info-card">
+                <span class="tag t-blue">Đúng ngành</span>
+                <h3>Khớp sinh viên với vị trí</h3>
+                <p>So <code>users.major</code> với <code>internship_positions.major</code> khi đăng ký; lệch ngành thì chặn và báo rõ.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-purple">Quota</span>
+                <h3>Không vượt chỉ tiêu</h3>
+                <p>Đếm số đăng ký Pending/Approved của vị trí, so với quota trước khi cho đăng ký mới.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-amber">Nhật ký</span>
+                <h3>Tự xác định trễ hạn</h3>
+                <p>Mỗi đợt chia 6 tuần theo ngày bắt đầu; nộp sau hạn cuối tuần W thì tự gắn trạng thái <b>Trễ</b>.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-red">Cảnh báo</span>
+                <h3>Danh sách nguy cơ</h3>
+                <p>Tự phát hiện sinh viên thiếu nhật ký và hiện popup cảnh báo ngay khi sinh viên đăng nhập.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-green">Đánh giá kép</span>
+                <h3>Hợp nhất điểm</h3>
+                <p>Doanh nghiệp và giảng viên chấm độc lập; điểm cuối = DN×0.6 + GV×0.4, xếp Đạt/Không đạt.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-blue">Hồ sơ</span>
+                <h3>Báo cáo theo tuần</h3>
+                <p>Sinh viên đính kèm file báo cáo mỗi tuần; giảng viên xem file và nhận xét từng tuần.</p>
+            </div>
+        </div>
+        <div class="quote">
+            <b>Lời thoại gợi ý:</b> Các con số trên giao diện không phải để trang trí. Chúng trả lời câu hỏi quản lý: sinh viên nào sắp không đủ điều kiện, vị trí nào đã đầy, ai chấm điểm rồi, và điểm tổng kết được tính tự động từ hai nguồn đánh giá.
+        </div>
+    </section>
+
+    <!-- ARCHITECTURE / ROLES -->
+    <section class="panel">
+        <h2>4. Phân quyền &amp; các module chức năng</h2>
+        <p class="lead">Hệ thống dùng PHP thuần + PDO (prepared statements) với file dùng chung cho kết nối CSDL và xác thực. Mỗi vai trò chỉ thấy và thao tác đúng phần việc của mình — chặn cả ở giao diện lẫn backend.</p>
+        <div class="grid g2">
+            <div class="info-card">
+                <span class="tag t-blue">Admin</span>
+                <h3>Quản trị toàn hệ thống</h3>
+                <p>Quản lý tài khoản, doanh nghiệp, vị trí, đợt thực tập; duyệt đăng ký; phân công GVHD; xem toàn bộ nhật ký và điểm tổng kết.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-green">Sinh viên</span>
+                <h3>Ứng tuyển &amp; nộp nhật ký</h3>
+                <p>Xem doanh nghiệp/vị trí, ứng tuyển kèm CV, nộp nhật ký 6 tuần + file báo cáo, xem GVHD và điểm của mình.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-amber">Giảng viên</span>
+                <h3>Hướng dẫn &amp; chấm điểm</h3>
+                <p>Chỉ thấy sinh viên mình phụ trách; xem nhật ký, nhận xét từng tuần, chấm điểm giảng viên.</p>
+            </div>
+            <div class="info-card">
+                <span class="tag t-purple">Doanh nghiệp</span>
+                <h3>Tuyển &amp; đánh giá</h3>
+                <p>Mở vị trí kèm JD, xem CV ứng viên và duyệt/từ chối, chấm điểm doanh nghiệp cho sinh viên của công ty mình.</p>
+            </div>
+        </div>
+        <div class="quote">
+            <b>Cơ chế kỹ thuật:</b> <code>config/db.php</code> tạo kết nối PDO dùng chung; <code>includes/auth.php</code> kiểm tra đăng nhập và vai trò qua <code>requireLogin([...])</code>; mọi truy vấn dùng prepared statement và escape output bằng hàm <code>e()</code> để chống SQL injection và XSS.
+        </div>
+    </section>
+
+    <!-- DEMO FLOW -->
+    <section class="panel">
+        <h2>5. Luồng demo gợi ý</h2>
+        <p class="lead">Demo nên chứng minh logic backend. Nếu chỉ thêm/sửa/xóa bản ghi, dự án sẽ trông như CRUD cơ bản và không thể hiện được độ phức tạp của đề tài.</p>
+        <div class="step"><div class="n">1</div><div>
+            <h3>Đăng nhập sinh viên &amp; ứng tuyển</h3>
+            <p>Mở danh sách doanh nghiệp, chọn vị trí, ứng tuyển kèm CV. Nêu rõ hệ thống kiểm tra quota trước khi lưu.</p>
+        </div></div>
+        <div class="step"><div class="n">2</div><div>
+            <h3>Đăng ký bị chặn</h3>
+            <p>Thử đăng ký vị trí khác ngành hoặc đã đủ quota — hệ thống báo lỗi và không tạo đăng ký. Đây là phần quan trọng nhất vì chứng minh logic nghiệp vụ.</p>
+        </div></div>
+        <div class="step"><div class="n">3</div><div>
+            <h3>Doanh nghiệp duyệt CV</h3>
+            <p>Đăng nhập tài khoản doanh nghiệp, xem CV ứng viên, bấm Duyệt — đăng ký chuyển sang <code>Approved</code>.</p>
+        </div></div>
+        <div class="step"><div class="n">4</div><div>
+            <h3>Phân công &amp; nhật ký</h3>
+            <p>Admin phân công GVHD; sinh viên nộp nhật ký tuần kèm file — hệ thống tự gắn Đúng hạn/Trễ; giảng viên nhận xét.</p>
+        </div></div>
+        <div class="step"><div class="n">5</div><div>
+            <h3>Đánh giá &amp; điểm tổng kết</h3>
+            <p>Doanh nghiệp và giảng viên chấm điểm; mở bảng điểm tổng kết thấy điểm cuối tính tự động (DN×0.6 + GV×0.4).</p>
+        </div></div>
+    </section>
+
+    <!-- RUBRIC -->
+    <section class="panel">
+        <h2>Đối chiếu với tiêu chí chấm điểm</h2>
+        <p class="lead">Giải thích phần nào của hệ thống đáp ứng từng mức. Đừng chỉ nói "chúng em dùng X", mà chỉ rõ tính năng nào minh chứng cho điều đó.</p>
+        <div class="rubric-row">
+            <div class="lvl">Cơ bản</div>
+            <div>PHP + HTML + CSS + JS, CRUD đầy đủ cho 14 bảng, kiểm tra dữ liệu ở backend, file SQL xuất kèm để nộp.</div>
+            <div class="pill" style="background:var(--ink)">Bắt buộc</div>
+        </div>
+        <div class="rubric-row">
+            <div class="lvl">Khá</div>
+            <div>Phân quyền 4 vai trò rõ ràng; dùng PDO prepared statements thay vì nối chuỗi SQL; escape output chống XSS.</div>
+            <div class="pill t-blue">+5–10%</div>
+        </div>
+        <div class="rubric-row">
+            <div class="lvl">Tốt</div>
+            <div>Logic nghiệp vụ thật: kiểm tra đúng ngành + quota, tự xác định trễ hạn nhật ký theo lịch tuần, đánh giá kép theo trọng số.</div>
+            <div class="pill t-green">+10–15%</div>
+        </div>
+        <div class="rubric-row">
+            <div class="lvl">Rất tốt</div>
+            <div>Luồng phê duyệt nhiều vai trò (ứng tuyển → doanh nghiệp duyệt CV → phân công GVHD), upload file CV/JD/báo cáo.</div>
+            <div class="pill t-amber">+15–20%</div>
+        </div>
+        <div class="rubric-row">
+            <div class="lvl">Xuất sắc</div>
+            <div>Cảnh báo nguy cơ tự động khi đăng nhập, nhận xét nhật ký từng tuần, báo cáo tiến độ 6 tuần kèm file.</div>
+            <div class="pill t-purple">+20–30%</div>
+        </div>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="panel">
+        <h2>Kết luận</h2>
+        <div class="quote">
+            <b>Lời kết gợi ý:</b> Điểm cốt lõi của dự án là hệ thống không chỉ lưu đăng ký. Nó kiểm tra từng đăng ký trước khi lưu (đúng ngành, còn quota), quản lý luồng phê duyệt nhiều vai trò, theo dõi tiến độ nhật ký và tự cảnh báo, rồi hợp nhất đánh giá kép thành điểm tổng kết. Nếu phát triển tiếp, nhóm sẽ ưu tiên REST API, tương tác AJAX, và xuất báo cáo cho cán bộ quản lý.
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    Hệ thống Quản lý Thực tập &amp; Đánh giá Doanh nghiệp · INS3064 · Tài liệu hướng dẫn thuyết trình
+</footer>
+
+</body>
+</html>
