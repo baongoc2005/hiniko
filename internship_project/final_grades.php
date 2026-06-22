@@ -1,69 +1,120 @@
 <?php
-include 'db.php';
+require 'config/db.php';
+require 'includes/auth.php';
+requireLogin(['admin', 'student', 'lecturer']);
 
-try {
-    // SQL Lấy điểm: Hãy đảm bảo các tên cột ce.xxx và le.xxx khớp với DB của bạn
-    // Mình sẽ để là registration_id (có chữ i) - nếu vẫn lỗi bạn hãy đổi thành regstration_id
-    $sql = "SELECT u.ten AS student_name, 
-                   ce.score AS c_score, 
-                   le.score AS l_score,
-                   ir.id
-            FROM internship_registrations ir
-            JOIN users u ON ir.student_id = u.user_id
-            LEFT JOIN company_evaluations ce ON ir.id = ce.registration_id
-            LEFT JOIN lecturer_evaluations le ON ir.id = le.registration_id";
+$pageTitle = "Điểm tổng kết";
+$active = "final_grades";
+$message = "";
 
-    $stmt = $pdo->query($sql);
-    $grades = $stmt->fetchAll();
+// Trọng số điểm tổng kết (DN 60%, GV 40%)
+const COMPANY_WEIGHT = 0.6;
+const LECTURER_WEIGHT = 0.4;
 
-    // SQL Lấy nhật ký tuân thủ
-    $logs = $pdo->query("SELECT cl.*, u.ten 
-                         FROM compliance_logs cl 
-                         JOIN internship_registrations ir ON cl.registration_id = ir.id 
-                         JOIN users u ON ir.student_id = u.user_id")->fetchAll();
-} catch (PDOException $e) {
-    // Nếu vẫn lỗi, trang web sẽ hiện thông báo hướng dẫn thay vì báo lỗi nghiêm trọng
-    die("<div style='color:red; padding:20px; border:1px solid red;'>
-            <h3>Lỗi kết nối Database!</h3>
-            <p>Vui lòng kiểm tra lại tên cột trong SQL. Lỗi chi tiết: " . $e->getMessage() . "</p>
-            <p>Mẹo: Kiểm tra xem trong bảng company_evaluations, cột ID đăng ký là <b>registration_id</b> hay <b>regstration_id</b> rồi sửa lại trong code.</p>
-         </div>");
+$role = currentRole();
+$isAdmin = $role === 'admin';
+
+// Chỉ admin được tính lại điểm tổng kết
+if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rows = $pdo->query("
+        SELECT ir.ir_id, ce.score AS company_score, le.score AS lecturer_score
+        FROM internship_registrations ir
+        JOIN company_evaluations ce ON ir.ir_id = ce.registration_id
+        JOIN lecturer_evaluations le ON ir.ir_id = le.registration_id
+    ")->fetchAll();
+
+    $stmt = $pdo->prepare("
+        INSERT INTO final_grades (registration_id, company_score, lecturer_score, final_score)
+        VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            company_score = VALUES(company_score),
+            lecturer_score = VALUES(lecturer_score),
+            final_score = VALUES(final_score),
+            created_at = CURRENT_TIMESTAMP
+    ");
+
+    foreach ($rows as $r) {
+        $final = ($r['company_score'] * COMPANY_WEIGHT) + ($r['lecturer_score'] * LECTURER_WEIGHT);
+        $stmt->execute([$r['ir_id'], $r['company_score'], $r['lecturer_score'], $final]);
+    }
+
+    $message = "Đã tính lại điểm tổng kết.";
 }
+
+$baseSelect = "
+    SELECT ir.ir_id, u.name AS student_name, s.student_code, ip.title, c.name AS company_name,
+           ce.score AS company_score, le.score AS lecturer_score,
+           fg.final_score, fg.created_at
+    FROM internship_registrations ir
+    JOIN users u ON ir.student_id = u.user_id
+    LEFT JOIN students s ON s.user_id = u.user_id
+    JOIN internship_positions ip ON ir.position_id = ip.ip_id
+    JOIN companies c ON ip.company_id = c.company_id
+    LEFT JOIN company_evaluations ce ON ir.ir_id = ce.registration_id
+    LEFT JOIN lecturer_evaluations le ON ir.ir_id = le.registration_id
+    LEFT JOIN final_grades fg ON ir.ir_id = fg.registration_id
+";
+
+if ($role === 'student') {
+    $gStmt = $pdo->prepare($baseSelect . " WHERE ir.student_id = ? ORDER BY ir.applied_at DESC");
+    $gStmt->execute([currentUserId()]);
+    $grades = $gStmt->fetchAll();
+} elseif ($role === 'lecturer') {
+    $gStmt = $pdo->prepare($baseSelect . "
+        JOIN internship_assignments ia ON ia.registration_id = ir.ir_id
+        WHERE ia.lecturer_id = ? ORDER BY ir.applied_at DESC");
+    $gStmt->execute([currentUserId()]);
+    $grades = $gStmt->fetchAll();
+} elseif ($role === 'company') {
+    $gStmt = $pdo->prepare($baseSelect . " WHERE ip.company_id = ? ORDER BY ir.applied_at DESC");
+    $gStmt->execute([(int)currentCompanyId()]);
+    $grades = $gStmt->fetchAll();
+} else {
+    $grades = $pdo->query($baseSelect . " ORDER BY ir.applied_at DESC")->fetchAll();
+}
+
+include 'includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Bảng Điểm Tổng Kết</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="container mt-5">
-    <h2 class="text-primary mb-4">📊 Kết Quả Thực Tập Cuối Kỳ</h2>
-    <table class="table table-bordered shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>Sinh viên</th>
-                <th>Điểm DN (60%)</th>
-                <th>Điểm GV (40%)</th>
-                <th>Tổng kết</th>
-            </tr>
-        </thead>
-        <tbody>
+<?php if ($message): ?><div class="alert success"><?= e($message) ?></div><?php endif; ?>
+
+<div class="card" style="margin-top:22px;">
+    <h3>Bảng điểm tổng kết</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Mã SV</th><th>Sinh viên</th><th>Vị trí</th><th>Doanh nghiệp</th><th>Điểm DN</th><th>Điểm GV</th><th>Điểm cuối</th><th>Trạng thái</th></tr>
+            </thead>
+            <tbody>
             <?php foreach ($grades as $g): 
-                $cs = $g['c_score'] ?? 0;
-                $ls = $g['l_score'] ?? 0;
-                $final = ($cs * 0.6) + ($ls * 0.4);
+                $calculated = null;
+                if ($g['company_score'] !== null && $g['lecturer_score'] !== null) {
+                    $calculated = ($g['company_score'] * COMPANY_WEIGHT) + ($g['lecturer_score'] * LECTURER_WEIGHT);
+                }
+                $final = $g['final_score'] ?? $calculated;
             ?>
-            <tr>
-                <td><?= htmlspecialchars($g['student_name']) ?></td>
-                <td><?= $cs ?></td>
-                <td><?= $ls ?></td>
-                <td class="fw-bold text-danger"><?= number_format($final, 2) ?></td>
-            </tr>
+                <tr>
+                    <td><?= $g['student_code'] ? e($g['student_code']) : '<span class="help">—</span>' ?></td>
+                    <td><?= e($g['student_name']) ?></td>
+                    <td><?= e($g['title']) ?></td>
+                    <td><?= e($g['company_name']) ?></td>
+                    <td><?= $g['company_score'] !== null ? e($g['company_score']) : '---' ?></td>
+                    <td><?= $g['lecturer_score'] !== null ? e($g['lecturer_score']) : '---' ?></td>
+                    <td><b><?= $final !== null ? number_format((float)$final, 2) : 'Waiting' ?></b></td>
+                    <td>
+                        <?php if ($final === null): ?>
+                            <span class="badge pending">Waiting</span>
+                        <?php elseif ($final >= 5): ?>
+                            <span class="badge pass">Pass</span>
+                        <?php else: ?>
+                            <span class="badge fail">Fail</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
             <?php endforeach; ?>
-        </tbody>
-    </table>
-    <a href="index.php" class="btn btn-secondary mt-3">Quay lại Trang chủ</a>
-</body>
-</html>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<?php include 'includes/footer.php'; ?>

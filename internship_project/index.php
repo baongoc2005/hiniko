@@ -1,69 +1,214 @@
+<?php
+require 'config/db.php';
+require 'includes/auth.php';
+
+if (isLoggedIn()) {
+    header('Location: dashboard.php');
+    exit;
+}
+
+$pageTitle = 'Welcome';
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HINIKO - Quản lý Thực tập (3 Thành viên x 4 Bảng)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Internship Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
-        :root { --primary: #2563eb; --secondary: #64748b; --bg: #f8fafc; }
-        body { background-color: var(--bg); font-family: 'Inter', system-ui, sans-serif; }
-        .hero { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 50px 0; border-radius: 0 0 40px 40px; margin-bottom: 40px; }
-        .card-custom { border: none; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); background: white; transition: 0.3s; height: 100%; }
-        .card-custom:hover { transform: translateY(-10px); }
-        .nav-link-custom { display: flex; align-items: center; padding: 12px 15px; margin-bottom: 8px; color: #334155; text-decoration: none; border-radius: 12px; background: #f1f5f9; transition: 0.2s; }
-        .nav-link-custom:hover { background: #e2e8f0; color: var(--primary); }
-        .nav-link-custom i { margin-right: 12px; width: 20px; text-align: center; }
-        .badge-4 { float: right; background: var(--primary); color: white; border-radius: 20px; padding: 2px 10px; font-size: 11px; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(37, 99, 235, 0.25), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.25), transparent 30%),
+                linear-gradient(135deg, #eef4ff, #f8f7ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111827;
+        }
+
+        .welcome-container {
+            width: 92%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(15, 23, 42, 0.15);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .left {
+            padding: 60px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 35px;
+        }
+
+        .left h1 {
+            font-size: 48px;
+            line-height: 1.15;
+            margin: 0 0 22px;
+        }
+
+        .left p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #e0e7ff;
+            margin: 0;
+        }
+
+        .features {
+            margin-top: 35px;
+            display: grid;
+            gap: 14px;
+        }
+
+        .feature {
+            padding: 14px 18px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.14);
+            font-weight: 600;
+        }
+
+        .right {
+            padding: 60px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right h2 {
+            font-size: 32px;
+            margin: 0 0 12px;
+        }
+
+        .right p {
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: grid;
+            gap: 16px;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 16px 22px;
+            border-radius: 16px;
+            font-weight: 800;
+            text-align: center;
+            transition: 0.25s;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 40px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .note {
+            margin-top: 25px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 850px) {
+            .welcome-container {
+                grid-template-columns: 1fr;
+            }
+
+            .left, .right {
+                padding: 38px;
+            }
+
+            .left h1 {
+                font-size: 36px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="hero text-center shadow">
-    <h1 class="fw-bold">Hệ Thống Quản Lý Thực Tập HINIKO</h1>
-    <p class="opacity-75">Cấu trúc chuyên nghiệp: 3 Thành viên | 12 Bảng dữ liệu</p>
-</div>
 
-<div class="container pb-5">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card-custom p-4">
-                <div class="mb-3 border-bottom pb-2">
-                    <span class="badge-4">Admin</span>
-                    <h5 class="fw-bold text-primary">THÀNH VIÊN 01</h5>
-                </div>
-                <a href="manage_users.php" class="nav-link-custom"><i class="fa-solid fa-users-gear"></i> Quản lý Tài khoản</a>
-                <a href="list_companies.php" class="nav-link-custom"><i class="fa-solid fa-building"></i> Quản lý Doanh nghiệp</a>
-                <a href="manage_positions.php" class="nav-link-custom"><i class="fa-solid fa-briefcase"></i> Vị trí Thực tập</a>
-                <a href="manage_periods.php" class="nav-link-custom"><i class="fa-solid fa-calendar-days"></i> Đợt thực tập</a>
-            </div>
+<div class="welcome-container">
+    <div class="left">
+        <div class="logo">IM</div>
+
+        <h1>Internship Manager System</h1>
+
+        <p>
+            Hệ thống quản lý toàn bộ quy trình thực tập của sinh viên:
+            đăng ký vị trí, phê duyệt, phân công giảng viên hướng dẫn,
+            nộp nhật ký, upload hồ sơ, đánh giá và tính điểm tổng kết.
+        </p>
+
+        <div class="features">
+            <div class="feature">✓ Company & Position Management</div>
+            <div class="feature">✓ Internship Registration & Approval</div>
+            <div class="feature">✓ Dual Evaluation & Final Grade</div>
+        </div>
+    </div>
+
+    <div class="right">
+        <h2>Welcome Back</h2>
+
+        <p>
+            Vui lòng đăng nhập để vào hệ thống quản lý.
+            Nếu chưa có tài khoản, bạn có thể đăng ký tài khoản mới.
+        </p>
+
+        <div class="btn-group">
+            <a href="login.php" class="btn btn-primary">Đăng nhập</a>
+            <a href="register.php" class="btn btn-secondary">Đăng ký</a>
         </div>
 
-        <div class="col-md-4">
-            <div class="card-custom p-4">
-                <div class="mb-3 border-bottom pb-2">
-                    <span class="badge-4">Progress</span>
-                    <h5 class="fw-bold text-success">THÀNH VIÊN 02</h5>
-                </div>
-                <a href="registration.php" class="nav-link-custom"><i class="fa-solid fa-file-signature"></i> Đăng ký Thực tập</a>
-                <a href="assignments.php" class="nav-link-custom"><i class="fa-solid fa-user-check"></i> Phân công hướng dẫn</a>
-                <a href="weekly_journals.php" class="nav-link-custom"><i class="fa-solid fa-book"></i> Nhật ký tuần</a>
-                <a href="upload_handler.php" class="nav-link-custom"><i class="fa-solid fa-cloud-arrow-up"></i> Quản lý Tập tin</a>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card-custom p-4">
-                <div class="mb-3 border-bottom pb-2">
-                    <span class="badge-4">Results</span>
-                    <h5 class="fw-bold text-warning">THÀNH VIÊN 03</h5>
-                </div>
-                <a href="evaluation.php" class="nav-link-custom"><i class="fa-solid fa-star-half-stroke"></i> Chấm điểm (DN & GV)</a>
-                <a href="final_grades.php" class="nav-link-custom"><i class="fa-solid fa-chart-simple"></i> Bảng điểm tổng kết</a>
-                <a href="final_grades.php#compliance" class="nav-link-custom"><i class="fa-solid fa-triangle-exclamation"></i> Nhật ký tuân thủ</a>
-                <a href="reports.php" class="nav-link-custom"><i class="fa-solid fa-file-export"></i> Xuất báo cáo tổng kết</a>
-            </div>
+        <div class="note">
+            Demo account: admin / 123456
         </div>
     </div>
 </div>
+
 </body>
 </html>
